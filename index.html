@@ -63,6 +63,24 @@
         /* Auth Card */
         .auth-overlay { position: fixed; inset: 0; background: #d1d7db; display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 350px; }
+
+        /* Mobile-specific fix for input area */
+        @media (max-width: 768px) {
+            .input-area {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                box-sizing: border-box; 
+                z-index: 101; 
+                border-top: 1px solid #ddd; 
+            }
+
+            .msg-display {
+                padding-bottom: 70px; /* Adjust this value based on your input-area height */
+            }
+        }
     </style>
 </head>
 <body>
@@ -105,6 +123,7 @@
             <div class="input-area">
                 <label class="icon-btn">📷<input type="file" id="img-input" accept="image/*" style="display:none" onchange="uploadImg(this)"></label>
                 <button id="voice-btn" class="icon-btn" onclick="toggleVoice()">🎤</button>
+                <button id="translate-btn" class="icon-btn" onclick="doTranslate()">🇸🇦</button> <!-- Arabic translation button -->
                 <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') doSend()">
                 <button class="icon-btn" onclick="doSend()">➤</button>
             </div>
@@ -239,6 +258,36 @@
                 btn.innerText = "🎤";
             }
         };
+
+        window.doTranslate = async () => {
+            const inputField = document.getElementById('msg-input');
+            const textToTranslate = inputField.value.trim();
+
+            if (!textToTranslate) {
+                alert("Please type a message to translate.");
+                return;
+            }
+
+            console.log("Attempting to translate:", textToTranslate);
+
+            // Placeholder for actual translation logic
+            // In a real application, you would make an API call to a translation service here.
+            // For example, using Google Cloud Translation API:
+            // const response = await fetch('YOUR_TRANSLATION_API_ENDPOINT', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ text: textToTranslate, target_language: 'ar' })
+            // });
+            // const data = await response.json();
+            // const translatedText = data.translatedText; // Adjust based on your API response
+
+            // For demonstration, we'll just prepend "[ARABIC TRANSLATION]"
+            const translatedText = "[ARABIC TRANSLATION] " + textToTranslate; 
+            
+            inputField.value = translatedText;
+            alert("Translation applied to input field. (Note: This is a placeholder. Actual translation requires an API.)");
+        };
+
     </script>
 </body>
 </html>
