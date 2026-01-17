@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Chat | Live & Animated</title>
+    <style>
+        :root {
+            --whatsapp-teal: #008069;
+            --whatsapp-green: #00a884;
+            --whatsapp-light: #dcf8c6;
+            --bg-gray: #f0f2f5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; transition: all 0.3s ease; }
+        
+        body { background-color: #d1d7db; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+        /* RTL Support */
+        .rtl { direction: rtl; }
+        .hidden { display: none !important; }
+
+        /* Animations */
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Login Styling */
+        .auth-card { 
+            background: white; padding: 40px; border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 380px; 
+            animation: fadeInScale 0.5s ease-out;
+        }
+        .auth-card h2 { color: var(--whatsapp-teal); margin-bottom: 20px; }
+        .auth-card input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .auth-card input:focus { border-color: var(--whatsapp-green); box-shadow: 0 0 5px rgba(0,168,132,0.3); }
+        .auth-card button { width: 100%; padding: 12px; background: var(--whatsapp-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .auth-card button:hover { background: var(--whatsapp-teal); }
+
+        /* App Layout */
+        .app-container { width: 100vw; height: 100vh; display: flex; background: var(--bg-gray); animation: fadeInScale 0.4s ease-in; }
+        
+        /* Sidebar */
+        .sidebar { width: 30%; min-width: 300px; background: white; border-right: 1px solid #d1d7db; display: flex; flex-direction: column; }
+        .sidebar-header { background: #f0f2f5; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .avatar { width: 40px; height: 40px; background: var(--whatsapp-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+
+        /* Chat Window */
+        .chat-main { flex: 1; display: flex; flex-direction: column; background-color: #efeae2; position: relative; }
+        .chat-main::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.08; pointer-events: none;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
+
+        .msg-display { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 1; }
+        
+        /* Message Bubbles */
+        .bubble { 
+            max-width: 65%; padding: 10px 14px; border-radius: 12px; font-size: 14.5px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative;
+            animation: slideInUp 0.3s ease-out;
+        }
+        .sent { align-self: flex-end; background: var(--whatsapp-light); border-top-right-radius: 0; }
+        .received { align-self: flex-start; background: #ffffff; border-top-left-radius: 0; }
+        .sender-name { font-size: 11px; font-weight: bold; margin-bottom: 3px; display: block; }
+        .timestamp { font-size: 10px; color: #667781; float: right; margin: 8px 0 0 10px; }
+
+        /* Input Area */
+        .input-area { background: #f0f2f5; padding: 10px 15px; display: flex; align-items: center; gap: 12px; z-index: 1; }
+        .input-area input { flex: 1; padding: 12px 18px; border: none; border-radius: 25px; outline: none; font-size: 15px; }
+        .send-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #54656f; transform: rotate(0deg); }
+        .send-btn:hover { color: var(--whatsapp-green); transform: scale(1.1); }
+        .rtl .send-btn { transform: scaleX(-1); }
+
+        /* Translate Button */
+        .lang-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; background: white; cursor: pointer; font-weight: bold; }
+        .logout { font-size: 12px; color: #ea0038; cursor: pointer; border: none; background: none; text-decoration: underline; }
+    </style>
+</head>
+<body id="body-tag">
+
+    <button class="lang-btn" onclick="toggleLang()" id="lang-toggle-btn">العربية</button>
+
+    <div id="login-view" class="auth-card">
+        <h2 id="tr-title">Family Messenger</h2>
+        <input type="text" id="user-input" placeholder="Enter your name">
+        <input type="password" id="pass-input" placeholder="Password (any)">
+        <button onclick="doLogin()" id="tr-login-btn">Join Chat</button>
+    </div>
+
+    <div id="app-view" class="app-container hidden">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="avatar" id="my-icon">?</div>
+                <button class="logout" onclick="doLogout()" id="tr-logout">Logout</button>
+            </div>
+            <div style="padding: 20px; border-bottom: 1px solid #f0f2f5; background: #f5f6f6;">
+                <strong id="tr-group-name">Family Group</strong><br>
+                <small id="tr-members">Active Members</small>
+            </div>
+        </aside>
+
+        <main class="chat-main">
+            <div class="msg-display" id="msg-list"></div>
+            <div class="input-area">
+                <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') doSend()">
+                <button class="send-btn" onclick="doSend()">➤</button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMYdzPOewh_HnJcKVwirNwaCfgK93-pP4",
+            authDomain: "family-d6ff1.firebaseapp.com",
+            databaseURL: "https://family-d6ff1-default-rtdb.firebaseio.com",
+            projectId: "family-d6ff1",
+            storageBucket: "family-d6ff1.firebasestorage.app",
+            messagingSenderId: "588925368337",
+            appId: "1:588925368337:web:e5bb5c30c7182f65a199b0",
+            measurementId: "G-ZTWL8YKH16"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const messagesRef = ref(db, 'family_messages');
+
+        // Language Translation Data
+        let currentLang = 'en';
+        const translations = {
+            en: {
+                title: "Family Messenger",
+                loginBtn: "Join Chat",
+                logout: "Logout",
+                group: "Family Group",
+                members: "Active Members",
+                input: "Type a message...",
+                namePlaceholder: "Enter your name",
+                passPlaceholder: "Password (any)",
+                toggle: "العربية"
+            },
+            ar: {
+                title: "دردشة العائلة",
+                loginBtn: "دخول الدردشة",
+                logout: "تسجيل الخروج",
+                group: "مجموعة العائلة",
+                members: "الأعضاء المتصلون",
+                input: "اكتب رسالة...",
+                namePlaceholder: "أدخل اسمك",
+                passPlaceholder: "كلمة المرور",
+                toggle: "English"
+            }
+        };
+
+        window.toggleLang = () => {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const t = translations[currentLang];
+            
+            // Update Text
+            document.getElementById('tr-title').innerText = t.title;
+            document.getElementById('tr-login-btn').innerText = t.loginBtn;
+            document.getElementById('tr-logout').innerText = t.logout;
+            document.getElementById('tr-group-name').innerText = t.group;
+            document.getElementById('tr-members').innerText = t.members;
+            document.getElementById('msg-input').placeholder = t.input;
+            document.getElementById('user-input').placeholder = t.namePlaceholder;
+            document.getElementById('pass-input').placeholder = t.passPlaceholder;
+            document.getElementById('lang-toggle-btn').innerText = t.toggle;
+
+            // Update Direction
+            if(currentLang === 'ar') {
+                document.getElementById('body-tag').classList.add('rtl');
+            } else {
+                document.getElementById('body-tag').classList.remove('rtl');
+            }
+        };
+
+        // Core Logic
+        window.doLogin = () => {
+            const name = document.getElementById('user-input').value.trim();
+            if(name) {
+                localStorage.setItem('chat_user', name);
+                location.reload();
+            }
+        };
+
+        window.doLogout = () => {
+            localStorage.removeItem('chat_user');
+            location.reload();
+        };
+
+        const currentUser = localStorage.getItem('chat_user');
+        if(currentUser) {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            document.getElementById('my-icon').innerText = currentUser[0].toUpperCase();
+
+            onChildAdded(messagesRef, (snapshot) => {
+                render(snapshot.val());
+            });
+        }
+
+        window.doSend = () => {
+            const el = document.getElementById('msg-input');
+            if(!el.value.trim()) return;
+
+            push(messagesRef, {
+                user: currentUser,
+                text: el.value,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            el.value = '';
+        };
+
+        function render(data) {
+            const container = document.getElementById('msg-list');
+            const isMe = data.user === currentUser;
+            const alignStyle = isMe ? 'sent' : 'received';
+            
+            const msgHtml = `
+                <div class="bubble ${alignStyle}">
+                    <span class="sender-name" style="color:${isMe ? '#008069' : '#027eb5'}">${data.user}</span>
+                    ${data.text}
+                    <span class="timestamp">${data.time}</span>
+                </div>
+            `;
+            container.innerHTML += msgHtml;
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
+</body>
+</html>
