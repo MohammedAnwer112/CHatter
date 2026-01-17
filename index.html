@@ -3,122 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Chat | Live & Animated</title>
+    <title>Family Chat | Photos & Sound</title>
     <style>
         :root {
             --whatsapp-teal: #008069;
             --whatsapp-green: #00a884;
             --whatsapp-light: #dcf8c6;
             --bg-gray: #f0f2f5;
+            --online-green: #25d366;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; transition: all 0.3s ease; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.2s ease; }
         body { background-color: #d1d7db; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-
-        /* RTL Support */
-        .rtl { direction: rtl; }
         .hidden { display: none !important; }
-
-        /* Animations */
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Login Styling */
-        .auth-card { 
-            background: white; padding: 40px; border-radius: 10px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 380px; 
-            animation: fadeInScale 0.5s ease-out;
-        }
-        .auth-card h2 { color: var(--whatsapp-teal); margin-bottom: 20px; }
-        .auth-card input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-        .auth-card input:focus { border-color: var(--whatsapp-green); box-shadow: 0 0 5px rgba(0,168,132,0.3); }
-        .auth-card button { width: 100%; padding: 12px; background: var(--whatsapp-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
-        .auth-card button:hover { background: var(--whatsapp-teal); }
+        .rtl { direction: rtl; }
 
         /* App Layout */
-        .app-container { width: 100vw; height: 100vh; display: flex; background: var(--bg-gray); animation: fadeInScale 0.4s ease-in; }
-        
-        /* Sidebar */
-        .sidebar { width: 30%; min-width: 300px; background: white; border-right: 1px solid #d1d7db; display: flex; flex-direction: column; }
+        .app-container { width: 100vw; height: 100vh; display: flex; background: var(--bg-gray); }
+        .sidebar { width: 30%; min-width: 280px; background: white; border-right: 1px solid #d1d7db; display: flex; flex-direction: column; }
         .sidebar-header { background: #f0f2f5; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .avatar { width: 40px; height: 40px; background: var(--whatsapp-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+        
+        .member-list { flex: 1; overflow-y: auto; }
+        .member-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f5f5f5; }
+        .online-dot { width: 10px; height: 10px; background: var(--online-green); border-radius: 50%; margin-right: 10px; }
 
-        /* Chat Window */
         .chat-main { flex: 1; display: flex; flex-direction: column; background-color: #efeae2; position: relative; }
         .chat-main::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.08; pointer-events: none;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            opacity: 0.08; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
         }
 
         .msg-display { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 1; }
-        
-        /* Message Bubbles */
-        .bubble { 
-            max-width: 65%; padding: 10px 14px; border-radius: 12px; font-size: 14.5px; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative;
-            animation: slideInUp 0.3s ease-out;
-        }
+        .bubble { max-width: 65%; padding: 10px; border-radius: 12px; font-size: 14.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; background: white; }
         .sent { align-self: flex-end; background: var(--whatsapp-light); border-top-right-radius: 0; }
         .received { align-self: flex-start; background: #ffffff; border-top-left-radius: 0; }
-        .sender-name { font-size: 11px; font-weight: bold; margin-bottom: 3px; display: block; }
-        .timestamp { font-size: 10px; color: #667781; float: right; margin: 8px 0 0 10px; }
+        .chat-img { max-width: 100%; border-radius: 8px; margin-top: 5px; cursor: pointer; }
 
-        /* Input Area */
-        .input-area { background: #f0f2f5; padding: 10px 15px; display: flex; align-items: center; gap: 12px; z-index: 1; }
-        .input-area input { flex: 1; padding: 12px 18px; border: none; border-radius: 25px; outline: none; font-size: 15px; }
-        .send-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #54656f; transform: rotate(0deg); }
-        .send-btn:hover { color: var(--whatsapp-green); transform: scale(1.1); }
-        .rtl .send-btn { transform: scaleX(-1); }
-
-        /* Translate Button */
-        .lang-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; background: white; cursor: pointer; font-weight: bold; }
-        .logout { font-size: 12px; color: #ea0038; cursor: pointer; border: none; background: none; text-decoration: underline; }
+        .input-area { background: #f0f2f5; padding: 10px 15px; display: flex; align-items: center; gap: 12px; z-index: 5; }
+        .input-area input { flex: 1; padding: 12px; border: none; border-radius: 20px; outline: none; }
+        
+        .auth-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 350px; }
+        .icon-btn { cursor: pointer; font-size: 22px; color: #54656f; background: none; border: none; }
     </style>
 </head>
 <body id="body-tag">
 
-    <button class="lang-btn" onclick="toggleLang()" id="lang-toggle-btn">العربية</button>
-
     <div id="login-view" class="auth-card">
         <h2 id="tr-title">Family Messenger</h2>
-        <input type="text" id="user-input" placeholder="Enter your name">
-        <input type="password" id="pass-input" placeholder="Password (any)">
-        <button onclick="doLogin()" id="tr-login-btn">Join Chat</button>
+        <input type="text" id="user-input" placeholder="Your Name">
+        <button onclick="doLogin()" style="width:100%; padding:12px; background:var(--whatsapp-green); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">Start Chatting</button>
     </div>
 
     <div id="app-view" class="app-container hidden">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="avatar" id="my-icon">?</div>
-                <button class="logout" onclick="doLogout()" id="tr-logout">Logout</button>
+                <div id="my-icon" style="width:40px; height:40px; background:var(--whatsapp-green); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">?</div>
+                <button onclick="doLogout()" style="color:red; background:none; border:none; cursor:pointer">Logout</button>
             </div>
-            <div style="padding: 20px; border-bottom: 1px solid #f0f2f5; background: #f5f6f6;">
-                <strong id="tr-group-name">Family Group</strong><br>
-                <small id="tr-members">Active Members</small>
-            </div>
+            <div class="member-list" id="member-list"></div>
         </aside>
 
         <main class="chat-main">
             <div class="msg-display" id="msg-list"></div>
             <div class="input-area">
+                <label class="icon-btn">
+                    📷
+                    <input type="file" id="img-input" accept="image/*" style="display:none" onchange="uploadImg(this)">
+                </label>
                 <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') doSend()">
-                <button class="send-btn" onclick="doSend()">➤</button>
+                <button class="icon-btn" onclick="doSend()">➤</button>
             </div>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onValue, set, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAMYdzPOewh_HnJcKVwirNwaCfgK93-pP4",
@@ -127,115 +87,97 @@
             projectId: "family-d6ff1",
             storageBucket: "family-d6ff1.firebasestorage.app",
             messagingSenderId: "588925368337",
-            appId: "1:588925368337:web:e5bb5c30c7182f65a199b0",
-            measurementId: "G-ZTWL8YKH16"
+            appId: "1:588925368337:web:e5bb5c30c7182f65a199b0"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const messagesRef = ref(db, 'family_messages');
+        const currentUser = localStorage.getItem('chat_user');
 
-        // Language Translation Data
-        let currentLang = 'en';
-        const translations = {
-            en: {
-                title: "Family Messenger",
-                loginBtn: "Join Chat",
-                logout: "Logout",
-                group: "Family Group",
-                members: "Active Members",
-                input: "Type a message...",
-                namePlaceholder: "Enter your name",
-                passPlaceholder: "Password (any)",
-                toggle: "العربية"
-            },
-            ar: {
-                title: "دردشة العائلة",
-                loginBtn: "دخول الدردشة",
-                logout: "تسجيل الخروج",
-                group: "مجموعة العائلة",
-                members: "الأعضاء المتصلون",
-                input: "اكتب رسالة...",
-                namePlaceholder: "أدخل اسمك",
-                passPlaceholder: "كلمة المرور",
-                toggle: "English"
-            }
-        };
+        // Sounds
+        const sndSent = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+        const sndRecv = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+        const sndLogin = new Audio('https://assets.mixkit.co/active_storage/sfx/2351/2351-preview.mp3');
 
-        window.toggleLang = () => {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            const t = translations[currentLang];
-            
-            // Update Text
-            document.getElementById('tr-title').innerText = t.title;
-            document.getElementById('tr-login-btn').innerText = t.loginBtn;
-            document.getElementById('tr-logout').innerText = t.logout;
-            document.getElementById('tr-group-name').innerText = t.group;
-            document.getElementById('tr-members').innerText = t.members;
-            document.getElementById('msg-input').placeholder = t.input;
-            document.getElementById('user-input').placeholder = t.namePlaceholder;
-            document.getElementById('pass-input').placeholder = t.passPlaceholder;
-            document.getElementById('lang-toggle-btn').innerText = t.toggle;
+        if (currentUser) startApp(currentUser);
 
-            // Update Direction
-            if(currentLang === 'ar') {
-                document.getElementById('body-tag').classList.add('rtl');
-            } else {
-                document.getElementById('body-tag').classList.remove('rtl');
-            }
-        };
+        function startApp(user) {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            document.getElementById('my-icon').innerText = user[0].toUpperCase();
+            sndLogin.play();
 
-        // Core Logic
+            set(ref(db, 'status/' + user), { online: true });
+            onDisconnect(ref(db, 'status/' + user)).remove();
+
+            onChildAdded(ref(db, 'family_messages'), (snapshot) => {
+                const data = snapshot.val();
+                renderMsg(data);
+                if(data.user !== currentUser) sndRecv.play();
+            });
+
+            onValue(ref(db, 'status'), (snapshot) => {
+                const list = document.getElementById('member-list');
+                list.innerHTML = '';
+                const users = snapshot.val();
+                for (let u in users) {
+                    list.innerHTML += `<div class="member-item"><div class="online-dot"></div><strong>${u}</strong></div>`;
+                }
+            });
+        }
+
         window.doLogin = () => {
             const name = document.getElementById('user-input').value.trim();
-            if(name) {
-                localStorage.setItem('chat_user', name);
-                location.reload();
-            }
+            if(name) { localStorage.setItem('chat_user', name); startApp(name); }
         };
 
         window.doLogout = () => {
+            if(currentUser) remove(ref(db, 'status/' + currentUser));
             localStorage.removeItem('chat_user');
             location.reload();
         };
 
-        const currentUser = localStorage.getItem('chat_user');
-        if(currentUser) {
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('app-view').classList.remove('hidden');
-            document.getElementById('my-icon').innerText = currentUser[0].toUpperCase();
-
-            onChildAdded(messagesRef, (snapshot) => {
-                render(snapshot.val());
-            });
-        }
-
         window.doSend = () => {
-            const el = document.getElementById('msg-input');
-            if(!el.value.trim()) return;
-
-            push(messagesRef, {
+            const input = document.getElementById('msg-input');
+            if(!input.value.trim()) return;
+            push(ref(db, 'family_messages'), {
                 user: currentUser,
-                text: el.value,
+                text: input.value,
+                type: 'text',
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
-            el.value = '';
+            input.value = '';
+            sndSent.play();
         };
 
-        function render(data) {
-            const container = document.getElementById('msg-list');
+        window.uploadImg = (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                push(ref(db, 'family_messages'), {
+                    user: currentUser,
+                    image: e.target.result, // Small images work in RTDB. For large, use Storage.
+                    type: 'image',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
+                sndSent.play();
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function renderMsg(data) {
+            const list = document.getElementById('msg-list');
             const isMe = data.user === currentUser;
-            const alignStyle = isMe ? 'sent' : 'received';
+            let content = data.type === 'image' ? `<img src="${data.image}" class="chat-img">` : `<div>${data.text}</div>`;
             
-            const msgHtml = `
-                <div class="bubble ${alignStyle}">
-                    <span class="sender-name" style="color:${isMe ? '#008069' : '#027eb5'}">${data.user}</span>
-                    ${data.text}
-                    <span class="timestamp">${data.time}</span>
-                </div>
-            `;
-            container.innerHTML += msgHtml;
-            container.scrollTop = container.scrollHeight;
+            list.innerHTML += `
+                <div class="bubble ${isMe ? 'sent' : 'received'}">
+                    <small style="font-weight:bold; color:${isMe ? '#008069' : '#027eb5'}">${data.user}</small>
+                    ${content}
+                    <span style="font-size:10px; color:#999; float:right; margin-top:4px">${data.time}</span>
+                </div>`;
+            list.scrollTop = list.scrollHeight;
         }
     </script>
 </body>
