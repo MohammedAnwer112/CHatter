@@ -10,24 +10,32 @@
             --whatsapp-light: #dcf8c6; --bg-gray: #f0f2f5;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #d1d7db; height: 100vh; display: flex; overflow: hidden; position: fixed; width: 100%; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: #d1d7db; 
+            height: 100vh; 
+            display: flex; 
+            overflow: hidden; 
+            position: fixed; 
+            width: 100%; 
+        }
+
         .hidden { display: none !important; }
 
         /* App Layout */
         .app-container { width: 100vw; height: 100vh; display: flex; background: var(--bg-gray); position: relative; }
         
-        /* Sidebar (Responsive) */
+        /* Sidebar Responsive */
         .sidebar { 
             width: 300px; background: white; border-right: 1px solid #d1d7db; 
             display: flex; flex-direction: column; z-index: 1000;
             transition: transform 0.3s ease;
         }
         
-        /* Phone View for Sidebar */
         @media (max-width: 768px) {
-            .sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; }
-            .sidebar.active { transform: translateX(0); box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
+            .sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 85%; max-width: 280px; }
+            .sidebar.active { transform: translateX(0); box-shadow: 5px 0 15px rgba(0,0,0,0.2); }
             .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; }
             .overlay.active { display: block; }
         }
@@ -35,52 +43,68 @@
         .sidebar-header { background: #f0f2f5; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; min-height: 60px; }
         .member-list { flex: 1; overflow-y: auto; }
         .member-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f5f5f5; gap: 10px; }
-        .online-dot { width: 10px; height: 10px; background: #25d366; border-radius: 50%; box-shadow: 0 0 5px #25d366; }
+        .online-dot { width: 10px; height: 10px; background: #25d366; border-radius: 50%; }
 
         /* Chat Window */
-        .chat-main { flex: 1; display: flex; flex-direction: column; background-color: #efeae2; position: relative; width: 100%; }
-        .chat-main::before { content: ""; position: absolute; inset: 0; opacity: 0.08; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); pointer-events: none; }
+        .chat-main { flex: 1; display: flex; flex-direction: column; background-color: #efeae2; position: relative; height: 100%; }
+        .chat-main::before { 
+            content: ""; position: absolute; inset: 0; opacity: 0.06; 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
+            pointer-events: none; 
+        }
 
         .chat-header { background: #f0f2f5; padding: 10px 16px; display: flex; align-items: center; gap: 10px; z-index: 10; min-height: 60px; border-bottom: 1px solid #ddd; }
         .menu-btn { display: none; font-size: 24px; cursor: pointer; border: none; background: none; }
         @media (max-width: 768px) { .menu-btn { display: block; } }
 
-        .msg-display { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; z-index: 1; padding-bottom: 80px; }
-        .bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 14.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; background: white; }
+        .msg-display { 
+            flex: 1; overflow-y: auto; padding: 15px; display: flex; 
+            flex-direction: column; gap: 8px; z-index: 1;
+            padding-bottom: 20px;
+        }
+
+        /* Bubble Arabic Logic */
+        .bubble { 
+            max-width: 85%; padding: 8px 12px; border-radius: 10px; 
+            font-size: 15px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); 
+            position: relative; background: white;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        .bubble[dir="rtl"] { text-align: right; }
+        
         .sent { align-self: flex-end; background: var(--whatsapp-light); border-top-right-radius: 0; }
         .received { align-self: flex-start; background: white; border-top-left-radius: 0; }
         
-        .delete-btn { font-size: 14px; cursor: pointer; color: #b9b9b9; margin-left: 8px; vertical-align: middle; }
+        .delete-btn { font-size: 14px; cursor: pointer; opacity: 0.6; margin-left: 8px; }
         .chat-img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
 
-        /* Footer Controls */
-        .input-area { background: #f0f2f5; padding: 10px; display: flex; align-items: center; gap: 8px; z-index: 100; border-top: 1px solid #ddd; }
-        .input-area input { flex: 1; padding: 10px 15px; border: none; border-radius: 20px; outline: none; font-size: 16px; }
-        .icon-btn { cursor: pointer; font-size: 20px; border: none; background: none; color: #54656f; padding: 5px; }
+        /* Footer Controls - Fixed for Mobile */
+        .input-area { 
+            background: #f0f2f5; padding: 10px 15px; display: flex; 
+            align-items: center; gap: 10px; z-index: 100;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        
+        .input-wrapper {
+            flex: 1; background: white; border-radius: 25px;
+            display: flex; align-items: center; padding: 5px 15px;
+        }
+
+        .input-area input { 
+            flex: 1; border: none; outline: none; padding: 8px 0;
+            font-size: 16px; background: transparent;
+        }
+
+        .icon-btn { cursor: pointer; font-size: 20px; border: none; background: none; color: #54656f; display: flex; align-items: center; }
+        .send-btn { background: var(--whatsapp-teal); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+
         .recording { color: red !important; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
         /* Auth Card */
         .auth-overlay { position: fixed; inset: 0; background: #d1d7db; display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .auth-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 350px; }
-
-        /* Mobile-specific fix for input area */
-        @media (max-width: 768px) {
-            .input-area {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                width: 100%;
-                box-sizing: border-box; 
-                z-index: 101; 
-                border-top: 1px solid #ddd; 
-            }
-
-            .msg-display {
-                padding-bottom: 70px; /* Adjust this value based on your input-area height */
-            }
-        }
     </style>
 </head>
 <body>
@@ -89,9 +113,9 @@
 
     <div id="login-view" class="auth-overlay">
         <div class="auth-card">
-            <h2 style="color:var(--whatsapp-teal)">Family Messenger</h2>
-            <input type="text" id="user-input" placeholder="Your Name" style="width:100%; padding:12px; margin:15px 0; border:1px solid #ddd; border-radius:5px;">
-            <select id="status-emoji" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ddd;">
+            <h2 style="color:var(--whatsapp-teal); margin-bottom:10px;">Family Messenger</h2>
+            <input type="text" id="user-input" placeholder="Your Name" style="width:100%; padding:12px; margin:15px 0; border:1px solid #ddd; border-radius:5px; font-size:16px;">
+            <select id="status-emoji" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ddd; font-size:16px;">
                 <option value="🏠">At Home 🏠</option>
                 <option value="🚗">Driving 🚗</option>
                 <option value="🏢">At Work 🏢</option>
@@ -122,10 +146,12 @@
 
             <div class="input-area">
                 <label class="icon-btn">📷<input type="file" id="img-input" accept="image/*" style="display:none" onchange="uploadImg(this)"></label>
+                <div class="input-wrapper">
+                    <input type="text" id="msg-input" placeholder="Type a message..." autocomplete="off">
+                    <button id="translate-btn" class="icon-btn" onclick="doTranslate()" title="Translate to Arabic">🇸🇦</button>
+                </div>
                 <button id="voice-btn" class="icon-btn" onclick="toggleVoice()">🎤</button>
-                <button id="translate-btn" class="icon-btn" onclick="doTranslate()">🇸🇦</button> <!-- Arabic translation button -->
-                <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') doSend()">
-                <button class="icon-btn" onclick="doSend()">➤</button>
+                <button class="icon-btn send-btn" onclick="doSend()">➤</button>
             </div>
         </main>
     </div>
@@ -146,12 +172,30 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const currentUser = localStorage.getItem('chat_user');
+        let currentUser = localStorage.getItem('chat_user');
         
         let mediaRecorder;
         let audioChunks = [];
 
+        // --- Sound Effects System ---
+        const sounds = {
+            send: new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3'),
+            receive: new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3'),
+            click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
+            delete: new Audio('https://assets.mixkit.co/active_storage/sfx/2205/2205-preview.mp3'),
+            login: new Audio('https://assets.mixkit.co/active_storage/sfx/2361/2361-preview.mp3')
+        };
+
+        function play(key) {
+            if (sounds[key]) {
+                sounds[key].currentTime = 0;
+                sounds[key].play().catch(() => {});
+            }
+        }
+
+        // --- UI Logic ---
         window.toggleSidebar = () => {
+            play('click');
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         };
@@ -178,6 +222,7 @@
                     list.innerHTML += `<div class="member-item"><div class="online-dot"></div><div><strong>${u}</strong><br><small>${users[u].status || ''}</small></div></div>`;
                 }
             });
+            play('login');
         }
 
         window.doLogin = () => {
@@ -186,11 +231,13 @@
             if(name) { 
                 localStorage.setItem('chat_user', name); 
                 localStorage.setItem('chat_status', status);
+                currentUser = name;
                 startApp(name); 
             }
         };
 
         window.doLogout = () => {
+            play('click');
             if(currentUser) remove(ref(db, 'status/' + currentUser));
             localStorage.clear();
             location.reload();
@@ -201,17 +248,30 @@
             if(!input.value.trim()) return;
             saveMsg({ user: currentUser, text: input.value, type: 'text' });
             input.value = '';
+            play('send');
         };
+
+        // Enter key to send
+        document.getElementById('msg-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') window.doSend();
+        });
 
         window.uploadImg = (input) => {
             const file = input.files[0];
+            if(!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => saveMsg({ user: currentUser, image: e.target.result, type: 'image' });
+            reader.onload = (e) => {
+                saveMsg({ user: currentUser, image: e.target.result, type: 'image' });
+                play('send');
+            };
             reader.readAsDataURL(file);
         };
 
         window.deleteMsg = (key) => {
-            if(confirm("Delete this message?")) remove(ref(db, 'family_messages/' + key));
+            if(confirm("Delete this message?")) {
+                remove(ref(db, 'family_messages/' + key));
+                play('delete');
+            }
         };
 
         function saveMsg(data) {
@@ -222,72 +282,82 @@
         function renderMsg(data, key) {
             const list = document.getElementById('msg-list');
             const isMe = data.user === currentUser;
-            let content = data.type === 'voice' ? `<audio controls src="${data.audio}" style="width:100%; height:35px;"></audio>` : 
-                          data.type === 'image' ? `<img src="${data.image}" class="chat-img">` : `<div>${data.text}</div>`;
             
-            list.innerHTML += `
-                <div class="bubble ${isMe ? 'sent' : 'received'}" id="${key}">
-                    <small style="font-weight:bold; color:${isMe ? '#008069' : '#027eb5'}">
-                        ${data.user} ${isMe ? `<span class="delete-btn" onclick="deleteMsg('${key}')">🗑️</span>` : ''}
-                    </small>
-                    ${content}
-                    <span style="font-size:10px; color:#999; float:right; margin-top:4px">${data.time}</span>
-                </div>`;
+            let content = '';
+            if(data.type === 'voice') content = `<audio controls src="${data.audio}" style="width:100%; height:35px;"></audio>`;
+            else if(data.type === 'image') content = `<img src="${data.image}" class="chat-img">`;
+            else content = `<div dir="auto">${data.text}</div>`;
+            
+            const div = document.createElement('div');
+            div.id = key;
+            div.className = `bubble ${isMe ? 'sent' : 'received'}`;
+            div.setAttribute('dir', 'auto'); // Automatically handles Arabic alignment
+            
+            div.innerHTML = `
+                <small style="font-weight:bold; display:block; margin-bottom:3px; color:${isMe ? '#008069' : '#027eb5'}">
+                    ${data.user} ${isMe ? `<span class="delete-btn" onclick="deleteMsg('${key}')">🗑️</span>` : ''}
+                </small>
+                ${content}
+                <span style="font-size:10px; color:#999; float:right; margin-top:4px">${data.time}</span>
+            `;
+            
+            list.appendChild(div);
             list.scrollTop = list.scrollHeight;
+
+            if (!isMe) play('receive');
         }
+
+        // --- Real Arabic Translation Logic ---
+        window.doTranslate = async () => {
+            play('click');
+            const inputField = document.getElementById('msg-input');
+            const text = inputField.value.trim();
+
+            if (!text) return;
+
+            const btn = document.getElementById('translate-btn');
+            btn.innerText = "⏳";
+
+            try {
+                // Using MyMemory API (Free, no key required for light usage)
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
+                const data = await res.json();
+                if(data.responseData.translatedText) {
+                    inputField.value = data.responseData.translatedText;
+                }
+            } catch (err) {
+                alert("Translation failed. Check internet.");
+            } finally {
+                btn.innerText = "🇸🇦";
+            }
+        };
 
         window.toggleVoice = async () => {
             const btn = document.getElementById('voice-btn');
             if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const reader = new FileReader();
-                    reader.onload = (e) => saveMsg({ user: currentUser, audio: e.target.result, type: 'voice' });
-                    reader.readAsDataURL(blob);
-                };
-                mediaRecorder.start();
-                btn.classList.add('recording');
-                btn.innerText = "🛑";
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onload = (e) => saveMsg({ user: currentUser, audio: e.target.result, type: 'voice' });
+                        reader.readAsDataURL(blob);
+                        play('send');
+                    };
+                    mediaRecorder.start();
+                    btn.classList.add('recording');
+                    btn.innerText = "🛑";
+                    play('click');
+                } catch (e) { alert("Mic access denied"); }
             } else {
                 mediaRecorder.stop();
                 btn.classList.remove('recording');
                 btn.innerText = "🎤";
             }
         };
-
-        window.doTranslate = async () => {
-            const inputField = document.getElementById('msg-input');
-            const textToTranslate = inputField.value.trim();
-
-            if (!textToTranslate) {
-                alert("Please type a message to translate.");
-                return;
-            }
-
-            console.log("Attempting to translate:", textToTranslate);
-
-            // Placeholder for actual translation logic
-            // In a real application, you would make an API call to a translation service here.
-            // For example, using Google Cloud Translation API:
-            // const response = await fetch('YOUR_TRANSLATION_API_ENDPOINT', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ text: textToTranslate, target_language: 'ar' })
-            // });
-            // const data = await response.json();
-            // const translatedText = data.translatedText; // Adjust based on your API response
-
-            // For demonstration, we'll just prepend "[ARABIC TRANSLATION]"
-            const translatedText = "[ARABIC TRANSLATION] " + textToTranslate; 
-            
-            inputField.value = translatedText;
-            alert("Translation applied to input field. (Note: This is a placeholder. Actual translation requires an API.)");
-        };
-
     </script>
 </body>
 </html>
